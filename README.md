@@ -3,7 +3,7 @@
 React table component, so the filters and all the features we want will be available and easy to use.
 I'll be using [React-Table](https://tanstack.com/table/v8), [Next.js](https://nextjs.org/), [Tailwindcss](https://tailwindcss.com/) to implement this reusable component.
 
-### Features included:
+## Features included
 
 - **Filters and search per column** and **Global filters, Global Search**.
 - **Grouping Columns**.

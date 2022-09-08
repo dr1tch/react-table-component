@@ -5,7 +5,7 @@ export default class Document extends NextDocument {
     return (
       <Html lang="en">
         <Head>
-          <title>Data Master</title>
+          <title>React Table Reusable Component</title>
           <link rel="icon" href="/assets/favicon.ico" />
           <meta
             name="viewport"

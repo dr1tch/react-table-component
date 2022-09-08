@@ -2,10 +2,15 @@ import axios from "axios";
 import React from "react";
 import { toast } from "react-toastify";
 export default async function authenticate() {
+  console.log("process.env.email", process.env.NEXT_PUBLIC_EMAIL);
+  console.log("process.env.password :>> ", process.env.NEXT_PUBLIC_PASSWORD);
   await axios
     .post<any>(
       `http://localhost:5000/api/auth/signin`,
-      { email: "admin@admin.dz", password: "123456789" },
+      {
+        email: process.env.NEXT_PUBLIC_EMAIL,
+        password: process.env.NEXT_PUBLIC_PASSWORD,
+      },
       { withCredentials: true }
     )
     .then((res) => {
@@ -31,4 +36,17 @@ export default async function authenticate() {
         progress: undefined,
       });
     });
+}
+
+export function getStaticProps() {
+  console.log(
+    "[Node.js only] NEXT_PUBLIC_EMAIL:",
+    process.env.NEXT_PUBLIC_EMAIL
+  );
+  console.log(
+    "[Node.js only] NEXT_PUBLIC_PASSWORD:",
+    process.env.NEXT_PUBLIC_PASSWORD
+  );
+
+  return { props: {} };
 }

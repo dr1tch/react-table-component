@@ -30,6 +30,7 @@ import { IUser } from "../types/users";
 import Avatar from "../components/Avatar";
 import DebouncedInput from "../components/debounce-input";
 import Filter from "../components/Filter";
+import IndeterminateCheckbox from "../components/indetermined-checkbox";
 declare module "@tanstack/table-core" {
   interface FilterFns {
     fuzzy: FilterFn<unknown>;
@@ -74,8 +75,28 @@ const Home: NextPage = () => {
     () => [
       columnHelper.accessor("AUSCODEXT", {
         id: "ref",
-        header: "REF",
-        cell: (info) => info.getValue(),
+        header: ({ table }) => (
+          <IndeterminateCheckbox
+            {...{
+              checked: table.getIsAllRowsSelected(),
+              indeterminate: table.getIsSomeRowsSelected(),
+              onChange: table.getToggleAllRowsSelectedHandler(),
+            }}
+          />
+        ),
+        // header: "REF",
+        // cell: (info) => info.getValue(),
+        cell: ({ row }) => (
+          <div className="px-1">
+            <IndeterminateCheckbox
+              {...{
+                checked: row.getIsSelected(),
+                indeterminate: row.getIsSomeSelected(),
+                onChange: row.getToggleSelectedHandler(),
+              }}
+            />
+          </div>
+        ),
         footer: (info) => info.column.id,
       }),
       columnHelper.accessor(
@@ -137,14 +158,15 @@ const Home: NextPage = () => {
     ],
     []
   );
-  console.log("columns", columns);
+  // console.log("columns", columns);
 
   const { data, isLoading } = useFetchUsers();
-  const [columnVisibility, setColumnVisibility] = React.useState({});
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
   );
   const [globalFilter, setGlobalFilter] = React.useState("");
+  const [rowSelection, setRowSelection] = React.useState({});
+  const [rowDataSelection, setRowDataSelection] = React.useState<IUser[]>([]);
   const table = useReactTable({
     data: data ? data : [],
     columns,
@@ -154,8 +176,10 @@ const Home: NextPage = () => {
     state: {
       columnFilters,
       globalFilter,
+      rowSelection,
     },
     onColumnFiltersChange: setColumnFilters,
+    onRowSelectionChange: setRowSelection,
     onGlobalFilterChange: setGlobalFilter,
     globalFilterFn: fuzzyFilter,
     getCoreRowModel: getCoreRowModel(),
@@ -378,6 +402,29 @@ const Home: NextPage = () => {
         </select>
       </div>
       <div>{table.getPrePaginationRowModel().rows.length} Rows</div>
+      <br />
+      <div>
+        <button
+          className="border rounded p-2 mb-2"
+          onClick={() => {
+            console.info(
+              "table.getSelectedFlatRows()",
+              table.getSelectedRowModel().rows.map((r) => r.original)
+            );
+            setRowDataSelection(
+              table.getSelectedRowModel().rows.map((r) => r.original)
+            );
+          }}
+        >
+          Log table.getSelectedFlatRows()
+        </button>
+      </div>
+      <div>
+        {Object.keys(rowSelection).length} of{" "}
+        {table.getPreFilteredRowModel().rows.length} Total Rows Selected
+      </div>
+      <pre>{JSON.stringify(rowSelection, null, 2)}</pre>
+      <pre>selected rows data: {JSON.stringify(rowDataSelection, null, 2)}</pre>
       <pre>{JSON.stringify(table.getState(), null, 2)}</pre>
     </div>
   );

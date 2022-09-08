@@ -1,4 +1,5 @@
 import { Column, Table } from "@tanstack/react-table";
+import moment, { isDate } from "moment";
 import React from "react";
 import DebouncedInput from "../debounce-input";
 
@@ -63,13 +64,25 @@ export default function Filter({
     <>
       <datalist id={column.id + "list"}>
         {sortedUniqueValues.slice(0, 5000).map((value: any) => (
-          <option value={value} key={value} />
+          <option
+            // value={value}
+            className="p-2 "
+            data-value={value}
+            key={value}
+          >
+            {moment(value).isValid()
+              ? moment(value).format("DD-MM-YYYY")
+              : value}
+          </option>
         ))}
       </datalist>
       <DebouncedInput
         type="text"
         value={(columnFilterValue ?? "") as string}
-        onChange={(value) => column.setFilterValue(value)}
+        onChange={(value) => {
+          console.log("value", value);
+          column.setFilterValue(value);
+        }}
         placeholder={`Search... (${column.getFacetedUniqueValues().size})`}
         className="w-36 border shadow rounded"
         list={column.id + "list"}
